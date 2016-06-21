@@ -101,25 +101,6 @@ for f in np.arange(len(flist)):
         s_ipi = s_ipi[~nans]
         s_freq = s_freq[~nans]
         
-        # Set Quadrant divisions
-        ipi_cutoff = 23 # seconds
-        freq_cutoff = 21 # Hz
-        
-        Q1 = thisgroup[(thisgroup.ipi>=ipi_cutoff) & (thisgroup.frequency>=freq_cutoff)] 
-        Q2 = thisgroup[(thisgroup.ipi<ipi_cutoff) & (thisgroup.frequency>=freq_cutoff)] 
-        Q3 = thisgroup[(thisgroup.ipi>=ipi_cutoff) & (thisgroup.frequency<freq_cutoff)] 
-        Q4 = thisgroup[(thisgroup.ipi<ipi_cutoff) & (thisgroup.frequency<freq_cutoff)] 
-
-        clusters =  np.array([[np.mean(Q1.frequency),np.mean(Q1.ipi)],
-                            [np.mean(Q2.frequency),np.mean(Q2.ipi)],
-                            [np.mean(Q3.frequency),np.mean(Q3.ipi)],
-                            [np.mean(Q4.frequency),np.mean(Q4.ipi)]])        
-        
-        csize = np.array([[len(Q1.frequency)],
-                          [len(Q2.frequency)],
-                          [len(Q3.frequency)],
-                          [len(Q4.frequency)]])
-        
         # Get histogram values and axes for plotting
         f_histo, ipivec, freqvec = np.histogram2d(s_ipi,s_freq,
                                    bins=(ipi_limits,freq_limits))
@@ -148,9 +129,9 @@ for f in np.arange(len(flist)):
         slices = ndimage.find_objects(labeled)
         x,y = [],[]
         for dy,dx in slices:
-            x_center = (dx.start + dx.stop - 1)/2
+            x_center = int((dx.start + dx.stop - 1)/2)
             x.append(x_center)
-            y_center = (dy.start + dy.stop - 1)/2
+            y_center = int((dy.start + dy.stop - 1)/2)
             y.append(y_center)
         
         plt.clf()
