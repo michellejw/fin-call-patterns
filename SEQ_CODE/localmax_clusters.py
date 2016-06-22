@@ -72,6 +72,7 @@ freq_centers = freq_limits[:-1] + (freqbinsize/2)
 thismonth = np.array((11,12,1,2,3),dtype=int)
 monthlist = np.array(('Nov','Dec','Jan','Feb','Mar'))
 
+
          
 for f in np.arange(len(flist)):
     # loop through each file
@@ -124,6 +125,12 @@ for f in np.arange(len(flist)):
         maxval = np.max(propcount)*.6
         filename = 'monthly2dhists/SMult_AXIAL3.png'
         
+                
+        # For straight counts
+#        propcount = np.flipud(f_histo)
+#        maxval = 70
+#        filename = 'monthly2dhists/SMult_AXIAL2.png'
+        
         # Find local maxima
         neighborhood_size = 3;
         threshold = .2;
@@ -143,31 +150,27 @@ for f in np.arange(len(flist)):
             y.append(y_center)
             
         # Get call counts at local maxima
-        # Pixel coordinates 
-        ipi_pixel_coords = np.arange(len(ipi_centers))       
-        freq_pixel_coords = np.arange(len(freq_centers))
-        # 1D interpolation to extract pixel coordinates
-        f1_ipi = sp.interpolate.interp1d(ipi_pixel_coords,ipi_centers)
-        f1_freq = sp.interpolate.interp1d(freq_pixel_coords,freq_centers)
-        # Calculate frequency and ipi coordinates for interpolation
-        freq_coords = f1_freq(x)
-        ipi_coords = f1_ipi(y)
-        # Create 2d interp function
-        f2 = sp.interpolate.interp2d(freq_centers,ipi_centers,propcount)
-        peak_counts = f2(freq_coords,ipi_coords)        
+        f_histo_flip = np.flipud(f_histo)
+        peak_counts = f_histo_flip[y,x]            
+        
+#        # debugging plot
+#        plt.clf()
+#        plt.imshow(f_histo_flip)        
+#        plt.plot(x,y,'ro')                    
+
+        # Calculate frequency and ipi coordinates for local maxima peaks
+        freq_coords = freq_centers[x]
+        ipi_coords = np.flipud(ipi_centers)[y]
+        
+        # store freq/ipi peak variables in a pd dataframe
+        if ((f==0) & (m==0)): # first instrument/month
+            print "thing1" # construct data frame
+        else:
+            print "thing2" # append to existing data frame
         
         
-        plt.clf()
-        plt.imshow(np.flipud(f_histo))        
-        plt.plot(x,y,'ro')
-        
-        
-        # For straight counts
-#        propcount = np.flipud(f_histo)
-#        maxval = 70
-#        filename = 'monthly2dhists/SMult_AXIAL2.png'
-        
-        axarr[f,m].scatter(clusters[:,0],clusters[:,1],color='red')                        
+#        axarr[f,m].scatter(clusters[:,0],clusters[:,1],color='red')   
+        axarr[f,m].scatter(freq_coords,ipi_coords,color='red')   
         im = axarr[f,m].imshow(propcount,extent=[np.min(freqvec),np.max(freqvec),
                                    np.min(ipivec),np.max(ipivec)],
                                    interpolation='nearest',
