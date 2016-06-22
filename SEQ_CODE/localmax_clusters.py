@@ -9,6 +9,9 @@ Created on Sat Jun 18 15:20:29 2016
 """
 
 import numpy as np
+import scipy as sp
+import scipy.ndimage as ndimage
+import scipy.ndimage.filters as filters
 import pandas as pd 
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
@@ -55,8 +58,14 @@ for fdex in np.arange(len(flist)):
 f1.subplots_adjust(hspace=0.05,wspace=0.05)
 
 # set axis extents
-ipi_limits = np.arange(5,45,1)
-freq_limits = np.arange(15,26,.4)
+ipibinsize = 1.;
+freqbinsize = .4;
+ipi_limits = np.arange(5.,45.,ipibinsize)
+freq_limits = np.arange(15.,26.,freqbinsize)
+
+# get bin coordinate centers for frequency and IPI
+ipi_centers = ipi_limits[:-1] + (ipibinsize/2)
+freq_centers = freq_limits[:-1] + (freqbinsize/2)
 
 #monthyear = np.array(((2011,11),(2011,12),
 #                      (2012,1),(2012,2),(2012,3)),dtype=int)
@@ -115,15 +124,14 @@ for f in np.arange(len(flist)):
         maxval = np.max(propcount)*.6
         filename = 'monthly2dhists/SMult_AXIAL3.png'
         
-        # testing find maxima
+        # Find local maxima
         neighborhood_size = 3;
-        threshold = .1;
+        threshold = .2;
         data_max = filters.maximum_filter(propcount,neighborhood_size)
         maxima = (propcount==data_max)
         data_min = filters.minimum_filter(propcount,neighborhood_size)
         diff = ((data_max - data_min) > threshold)
         maxima[diff == 0] = 0
-        #plt.clf(), plt.imshow(maxima)
         
         labeled, num_objects = ndimage.label(maxima)
         slices = ndimage.find_objects(labeled)
@@ -133,9 +141,24 @@ for f in np.arange(len(flist)):
             x.append(x_center)
             y_center = int((dy.start + dy.stop - 1)/2)
             y.append(y_center)
+            
+        # Get call counts at local maxima
+        # Pixel coordinates 
+        ipi_pixel_coords = np.arange(len(ipi_centers))       
+        freq_pixel_coords = np.arange(len(freq_centers))
+        # 1D interpolation to extract pixel coordinates
+        f1_ipi = sp.interpolate.interp1d(ipi_pixel_coords,ipi_centers)
+        f1_freq = sp.interpolate.interp1d(freq_pixel_coords,freq_centers)
+        # Calculate frequency and ipi coordinates for interpolation
+        freq_coords = f1_freq(x)
+        ipi_coords = f1_ipi(y)
+        # Create 2d interp function
+        f2 = sp.interpolate.interp2d(freq_centers,ipi_centers,propcount)
+        peak_counts = f2(freq_coords,ipi_coords)        
+        
         
         plt.clf()
-        plt.imshow(propcount)
+        plt.imshow(np.flipud(f_histo))        
         plt.plot(x,y,'ro')
         
         
