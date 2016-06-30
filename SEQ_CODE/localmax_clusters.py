@@ -16,6 +16,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 import matplotlib as mpl
+import seaborn as sns
 import copy
 import scipy.linalg as LA
 
@@ -151,7 +152,8 @@ for f in np.arange(len(flist)):
             
         # Get call counts at local maxima
         f_histo_flip = np.flipud(f_histo)
-        peak_counts = f_histo_flip[y,x]            
+        peak_counts = f_histo_flip[y,x]
+        prop_counts = propcount[y,x]         
         
 #        # debugging plot
 #        plt.clf()
@@ -163,14 +165,35 @@ for f in np.arange(len(flist)):
         ipi_coords = np.flipud(ipi_centers)[y]
         
         # store freq/ipi peak variables in a pd dataframe
+        o = np.ones(freq_coords.shape,dtype=int)
+        yr = thisgroup.dettime[thisgroup.index[0]].year
+        mo = thisgroup.dettime[thisgroup.index[0]].month
+        yearvec = o*yr
+        monthvec = o*mo
+        datevec = np.tile(pd.to_datetime(yr*10000+mo*100+1,format='%Y%m%d'),len(o))
+        stavec = np.chararray(freq_coords.shape,itemsize=4)
+        stavec[:] = flist[f][3]
+        allpeaksdat = np.transpose(
+            np.array([stavec,datevec,freq_coords,ipi_coords,peak_counts,prop_counts]))
+        cols = ['station','datevec','freq','ipi','peakcounts','propcounts']
+        
         if ((f==0) & (m==0)): # first instrument/month
-            print "thing1" # construct data frame
+            peaksdf = pd.DataFrame(allpeaksdat) # construct data frame
+            peaksdf.columns = cols
+            #print('thing1')
         else:
-            print "thing2" # append to existing data frame
+            peaksdf_add = pd.DataFrame(allpeaksdat)
+            peaksdf_add.columns = cols
+            peaksdf = pd.concat([peaksdf,peaksdf_add],axis=0,ignore_index=True) # append to existing data frame
+            #print('thing2')
         
-        
-#        axarr[f,m].scatter(clusters[:,0],clusters[:,1],color='red')   
-        axarr[f,m].scatter(freq_coords,ipi_coords,color='red')   
+#        axarr[f,m].scatter(clusters[:,0],clusters[:,1],color='red') 
+        scaling = np.max(peak_counts)/100
+        axarr[f,m].scatter(freq_coords,ipi_coords,
+                            #s = peak_counts*scaling,
+                            #facecolors = 'none', 
+                            #edgecolors='red',
+                            c='red')   
         im = axarr[f,m].imshow(propcount,extent=[np.min(freqvec),np.max(freqvec),
                                    np.min(ipivec),np.max(ipivec)],
                                    interpolation='nearest',
@@ -201,4 +224,29 @@ plt.colorbar(im,cax=cax,extend='max')
 axbig.set_xlabel('Frequency (Hz)',labelpad=20)
 axbig.set_ylabel('IPI (s)',labelpad=25)
 
-#f1.savefig(filename)
+# Convert data types back to numeric 
+peaksdf['ipi'] = pd.to_numeric(peaksdf['ipi'])
+peaksdf['freq'] = pd.to_numeric(peaksdf['freq'])
+peaksdf['peakcounts']= pd.to_numeric(peaksdf['peakcounts'])
+peaksdf['propcounts']= pd.to_numeric(peaksdf['propcounts'])
+peaksdf['datevec']= pd.to_datetime(peaksdf['datevec'])
+
+
+plt.figure(5)
+plt.clf()
+plt.scatter(peaksdf.freq,
+            peaksdf.ipi,
+            s=peaksdf.propcounts*200,
+            alpha=.15,
+            edgecolors='none')
+plt.grid()
+
+plt.figure(6)
+plt.clf()
+plt.plot(peaksdf.datevec,
+         peaksdf.ipi,'.')
+plt.grid()
+
+
+#f1.savefig('monthly2dhists/SMult_Axial_withdots.png')
+#df['date_int'] = df.date.astype(np.int64)

@@ -101,7 +101,7 @@ for f in np.arange(len(flist)):
         # for proportional counts
         propcount = (np.flipud(f_histo)/totalcount)*100
         maxval = np.max(propcount)*.8
-        filename = 'monthly2dhists/SMult_GEO_ColzaAxial2_prop.png'
+        filename = 'monthly2dhists/SMult_GEO_KEMFAxial2_prop.png'
         
         # For straight counts
 #        propcount = np.flipud(f_histo)
