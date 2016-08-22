@@ -9,16 +9,11 @@ Created on Sat Jun 18 15:20:29 2016
 """
 
 import numpy as np
-import scipy as sp
 import scipy.ndimage as ndimage
 import scipy.ndimage.filters as filters
 import pandas as pd 
-import matplotlib.pyplot as plt
 import matplotlib.cm as cm
-import matplotlib as mpl
-import seaborn as sns
 import copy
-import scipy.linalg as LA
 
 #%matplotlib inline# Run this to force plots to open in another window
 
@@ -41,6 +36,10 @@ flist = [('AX_2006_2007','AX',5,'AX'),
          ('KENE_2005_2006','KECK',16,'KENE'),
          ('CZ_2007_2008','CZ',10,'CZ'),
          ('CZ_2008_2009','CZ',10,'CZ'),
+         ('CZ05_2007_2008','CZ',10,'CZ'),
+         ('CZ05_2008_2009','CZ',10,'CZ'),
+         ('CZ09_2007_2008','CZ',10,'CZ'),
+         ('CZ09_2008_2009','CZ',10,'CZ'),
          ('KEMF_2011_2012','ONC',5,'KEMF'),
          ('KEMF_2012_2013','ONC',5,'KEMF')]
          
@@ -185,4 +184,4 @@ peaksdf['propcounts']= pd.to_numeric(peaksdf['propcounts'])
 peaksdf['datevec']= pd.to_datetime(peaksdf['datevec'])
 
 
-# peaksdf.to_csv('ALL_seq_summary.csv',sep=',')
+# peaksdf.to_csv('ALL_seq_summary2.csv',sep=',')
