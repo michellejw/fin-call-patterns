@@ -10,7 +10,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import pickle
 
-df = pd.read_csv('../SEQ_CODE/ALL_seq_summary.csv')
+df = pd.read_csv('../SEQ_CODE/ALL_seq_summary4.csv')
 sta = pd.read_csv('../SEQ_CODE/stationlist.csv')
 
 df.datevec = pd.to_datetime(df.datevec)

@@ -15,7 +15,7 @@ import pandas as pd
 from scipy import interpolate
 import matplotlib.pyplot as plt
 from mpl_toolkits.basemap import Basemap
-from palettable.colorbrewer.qualitative import Set1_5
+
 
 #%matplotlib
 
@@ -56,11 +56,14 @@ m = Basemap(projection='mill', llcrnrlat=minlat,urcrnrlat=maxlat,llcrnrlon=minlo
 x,y = m(grid_x,grid_y)
  
 fig1 = plt.figure(4, figsize = (6,8))
+#fig1 = plt.figure(4, figsize = (10,13))
 fig1.clf()
 ax1 = fig1.add_subplot(111)
 cs = m.pcolor(x,y,grid_z,cmap=plt.cm.Greys_r,vmax=0)
 m.fillcontinents(color='tan', lake_color='lightgrey')
 m.drawcoastlines(color='darkslategray')
+m.drawstates(color = 'lightslategray')
+m.drawcountries(color = 'darkslategray')
 # Add parallels and meridians
 parallels = np.arange(40,51,2)
 meridians = np.arange(-130,-119,2)
@@ -78,23 +81,26 @@ stname = np.array(stations['station'])
 
 xsta, ysta = m(stlon, stlat) # get positions in map coordinates
 
+
+import pickle
+
+# Set up colors (see cols.py)
+coldict = pickle.load( open( "cols.p", "rb" ) )   
+# loop through each row in df
+stacols = []
+for idx in range(len(stations['station'])):
+    stacols.append(coldict[stations['station'][idx]])
+
 #colvec = GreenOrange_12.hex_colors
-colvec = Set1_5.hex_colors
+#colvec = Set1_5.hex_colors
 
-pts_CI = m.scatter(xsta[np.array(net=='CI')],ysta[np.array(net=='CI')],
-       s=80,color=colvec[0], edgecolor='darkslategray',label='CI')
-
-pts_CI = m.scatter(xsta[np.array(net=='Keck')],ysta[np.array(net=='Keck')],
-       s=80,color=colvec[1], edgecolor='darkslategray',label='Keck')    
-       
-pts_CI = m.scatter(xsta[np.array(net=='ONC')],ysta[np.array(net=='ONC')],
-       s=80,color=colvec[2], edgecolor='darkslategray',label='ONC')   
-       
-pts_CI = m.scatter(xsta[np.array(net=='Axial')],ysta[np.array(net=='Axial')],
-       s=80,color=colvec[3], edgecolor='darkslategray',label='Axial')      
-
-pts_CI = m.scatter(xsta[np.array(net=='Colza')],ysta[np.array(net=='Colza')],
-       s=80,color=colvec[4], edgecolor='darkslategray',label='Colza')
+for kdx in np.arange(len(stations)):
+    if (net[kdx]=='CI'):
+        m.scatter(xsta[kdx],ysta[kdx],s=80, c = 'firebrick',
+            edgecolor='darkslategray')
+    else:
+        m.scatter(xsta[kdx],ysta[kdx],s=80, c = stacols[kdx],
+            edgecolor='darkslategray')
        
 # Add labels to points
 for an in np.arange(len(stations)):
@@ -111,5 +117,5 @@ for an in np.arange(len(stations)):
        
 #ax1.legend(scatterpoints=1)
 
-fig1.savefig('FIG_map.tif')
+fig1.savefig('FIG_map_dpi600.png',dpi = 600)
 #fig1.savefig('CallPatterns_map2.eps') # takes forever to open using illustrator

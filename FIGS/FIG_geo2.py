@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 import pickle
 
 #df = pd.read_csv('../SEQ_CODE/ALL_seq_summary.csv')
-df = pd.read_csv('../SEQ_CODE/ALL_seq_summary2.csv')
+df = pd.read_csv('../SEQ_CODE/ALL_seq_summary4.csv')
 sta = pd.read_csv('../SEQ_CODE/stationlist.csv')
 
 df.datevec = pd.to_datetime(df.datevec)
@@ -19,22 +19,24 @@ df['year'] = df.datevec.dt.year
 df['month'] = df.datevec.dt.month
 df['dt'] = df.datevec.dt.date
 
+# Subset the data            
+df = df[(df['datevec'] > '2007-07-01') & (df['datevec'] < '2009-06-30')]
+
 # Set up colors (see cols.py)
 coldict = pickle.load( open( "cols.p", "rb" ) )    
 
 # loop through each row in df
 stacols = []
-for idx in range(len(df['station'])):
+for idx in df.index:
     stacols.append(coldict[df['station'][idx]])
     
 df['stacolors'] = stacols
 
-# Subset the data            
-df = df[(df['datevec'] > '2007-07-01') & (df['datevec'] < '2009-06-30')]
+
 
 
 # Subset for peakcounts
-df = df[(df.peakcounts > 50)]
+#df = df[(df.peakcounts > 50)]
 
 # Unique stations after filtering
 unqsta = np.unique(df['station'])
@@ -68,3 +70,33 @@ legend2 = plt.legend(handles=[s1,s2,s3],title='Counts',bbox_to_anchor=(1.25,0.5)
 plt.gca().add_artist(legend1)
 
 plt.savefig('FIG_geo_axcz.tif')
+
+
+
+# percentage of doublet calls at Colza
+df_CZS_1 = df[(df['station'] == 'CZ') & (df['ipi']>=22) & (df['datevec'] <= '2008-03-30')]
+df_CZD_1 = df[(df['station'] == 'CZ') & (df['ipi']<22) & (df['datevec'] <= '2008-03-30')]
+y1d = np.sum(df_CZD_1['peakcounts'])
+y1s = np.sum(df_CZS_1['peakcounts'])
+
+df_CZS_2 = df[(df['station'] == 'CZ') & (df['ipi']>=22) & (df['datevec'] >= '2008-11-01')]
+df_CZD_2 = df[(df['station'] == 'CZ') & (df['ipi']<22) & (df['datevec'] <= '2008-11-01')]
+y2d = np.sum(df_CZD_2['peakcounts'])
+y2s = np.sum(df_CZS_2['peakcounts'])
+
+df_CZS_1 = df[(df['station'] == 'CZ') & (df['ipi']>=22) & (df['datevec'] <= '2008-03-30')]
+df_CZD_1 = df[(df['station'] == 'CZ') & (df['ipi']<22) & (df['datevec'] <= '2008-03-30')]
+y1d = np.sum(df_CZD_1['peakcounts'])
+y1s = np.sum(df_CZS_1['peakcounts'])
+
+df_CZS_2 = df[(df['station'] == 'CZ') & (df['ipi']>=22) & (df['datevec'] >= '2008-11-01')]
+df_CZD_2 = df[(df['station'] == 'CZ') & (df['ipi']<22) & (df['datevec'] <= '2008-11-01')]
+y2d = np.sum(df_CZD_2['peakcounts'])
+y2s = np.sum(df_CZS_2['peakcounts'])
+
+
+# doublet frequency
+y1doublet_f = df_CZD_1[(df_CZD_1['freq']>20)&(df_CZD_1['freq']<22)]
+meanCZdoubletfreq = np.mean(y1doublet_f['freq'])
+
+y1doublet_f = df_AXD_1[(df_CZD_1['freq']>20)&(df_CZD_1['freq']<22)]

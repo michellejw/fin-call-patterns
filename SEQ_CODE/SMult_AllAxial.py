@@ -113,7 +113,7 @@ for f in np.arange(len(flist)):
         # for proportional counts
         propcount = (np.flipud(f_histo)/totalcount)*100
         maxval = np.max(propcount)*.6
-        filename = 'monthly2dhists/SMult_AXIAL3.png'
+        filename = 'monthly2dhists/Axial_2D_histos.png'
         
         # For straight counts
 #        propcount = np.flipud(f_histo)
@@ -150,4 +150,4 @@ plt.colorbar(im,cax=cax,extend='max')
 axbig.set_xlabel('Frequency (Hz)',labelpad=20)
 axbig.set_ylabel('IPI (s)',labelpad=25)
 
-f1.savefig(filename)
+f1.savefig(filename,dpi=600)

@@ -26,18 +26,16 @@ flist = [('AX_2006_2007','AX',5,'AX'),
          ('AX_2010_2011','AX',5,'AX'),
          ('AX_2011_2012','AX',5,'AX'),
          ('AX_2012_2013','AX',5,'AX'),
-         ('J63A_2011_2012','CI',10,'J63A'),
-         ('J23A_2011_2012','CI',10,'J23A'),
-         ('J06A_2011_2012','CI',10,'J06A'),
-         ('G30A_2011_2012','CI',10,'G30A'),
-         ('G03A_2011_2012','CI',10,'G03A'),
+         ('J63A_2011_2012','CI',5,'J63A'),
+         ('J23A_2011_2012','CI',5,'J23A'),
+         ('J06A_2011_2012','CI',5,'J06A'),
+         ('G30A_2011_2012','CI',5,'G30A'),
+         ('G03A_2011_2012','CI',5,'G03A'),
          ('KENE_2003_2004','KECK',12,'KENE'),
          ('KENE_2004_2005','KECK',12,'KENE'),
-         ('KENE_2005_2006','KECK',16,'KENE'),
+         ('KENE_2005_2006','KECK',12,'KENE'),
          ('CZ_2007_2008','CZ',10,'CZ'),
          ('CZ_2008_2009','CZ',10,'CZ'),
-         ('CZ05_2007_2008','CZ',10,'CZ'),
-         ('CZ05_2008_2009','CZ',10,'CZ'),
          ('CZ09_2007_2008','CZ',10,'CZ'),
          ('CZ09_2008_2009','CZ',10,'CZ'),
          ('KEMF_2011_2012','ONC',5,'KEMF'),
@@ -184,4 +182,5 @@ peaksdf['propcounts']= pd.to_numeric(peaksdf['propcounts'])
 peaksdf['datevec']= pd.to_datetime(peaksdf['datevec'])
 
 
-# peaksdf.to_csv('ALL_seq_summary2.csv',sep=',')
+
+peaksdf.to_csv('ALL_seq_summary4.csv',sep=',')
